@@ -2,7 +2,15 @@
 
 [ -z "$BZ_DB_HOST" ] && echo "Missing Docker Environment, check docker-compose.yml" && exit -1
 cd /var/www/html
-apachectl start
+if [ -n "$(dpkg -s nginx 2>/dev/null | grep 'Status: install ok installed')" ]; then
+    echo "nginx detected! starting fcgiwrap and nginx."
+    spawn-fcgi -u www-data -g www-data -s /var/run/fcgiwrap.sock -M 766 /usr/sbin/fcgiwrap
+    /etc/init.d/nginx start
+fi
+if [ -n "$(dpkg -s apache2 2>/dev/null | grep 'Status: install ok installed')" ]; then
+    echo "apache2 detected! starting apache2."
+    apachectl start
+fi
 while :
 do
   echo "Waiting for database to be available..."
