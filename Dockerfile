@@ -1,13 +1,12 @@
 FROM ubuntu:26.04
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get -y dist-upgrade
-RUN apt-get -y install \
+RUN apt-get update && apt-get -y dist-upgrade && \
+    apt-get -y install --no-install-recommends \
     apache2 \
     graphviz \
     libapache2-mod-perl2 \
-    libapache2-mod-perl2-dev \
     libappconfig-perl \
     libauthen-radius-perl \
     libauthen-sasl-perl \
@@ -32,16 +31,15 @@ RUN apt-get -y install \
     libfile-mimeinfo-perl \
     libfile-slurp-perl \
     libfile-which-perl \
-    libgd-dev \
     libgd-graph-perl \
     libhtml-formattext-withlinks-perl \
     libhtml-scrubber-perl \
     libjson-rpc-perl \
+    libjson-xs-perl \
     liblocale-codes-perl \
     libmath-random-isaac-perl \
     libmath-random-isaac-xs-perl \
     libmodule-build-perl \
-    libmysqlclient-dev \
     libnet-ldap-perl \
     libsoap-lite-perl \
     libtemplate-perl \
@@ -49,19 +47,19 @@ RUN apt-get -y install \
     libtest-taint-perl \
     libtheschwartz-perl \
     libxml-perl \
+    libxmlrpc-lite-perl \
     libxml-twig-perl \
     mariadb-client \
     netcat-traditional \
     patchutils \
     perlmagick \
     tzdata \
-    vim-common
-
-# PatchReader is not packaged by Ubuntu, so install it from CPAN.
-RUN apt-get -y install build-essential && \
+    vim-common && \
+    apt-get -y install --no-install-recommends make && \
     cpan install PatchReader && \
     rm -rf /root/.cpan && \
-    apt-get purge -y --autoremove build-essential
+    apt-get purge -y --auto-remove make && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 COPY --chown=root:www-data . /var/www/html
@@ -75,4 +73,4 @@ RUN rm -rf /var/www/html/data /var/www/html/localconfig /var/www/html/index.html
     mkdir /var/www/html/data
 RUN a2enmod expires && a2enmod headers && a2enmod rewrite && a2dismod mpm_event && a2enmod mpm_prefork
 EXPOSE 80/tcp
-CMD docker/startup.sh
+CMD ["/root/docker/startup.sh"]
