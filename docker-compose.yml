@@ -15,6 +15,8 @@ services:
       - .:/mnt/sync
       # Optional: create ./custom-scripts and uncomment to run startup scripts.
       # - ./custom-scripts:/custom-scripts:ro
+      # Optional private CA for strict database TLS verification.
+      # - ./certs/database-ca.pem:/certs/database-ca.pem:ro
     tmpfs:
       - /tmp
       - /run/lock
@@ -32,6 +34,9 @@ services:
       - BZ_DB_USER=bugs
       - BZ_DB_NAME=bugs
       - BZ_DB_PASS=bugzilla
+      - BZ_DB_SSL=${BZ_DB_SSL:-1}
+      - BZ_DB_SSL_VERIFY=${BZ_DB_SSL_VERIFY:-0}
+      - BZ_DB_SSL_CA_FILE=${BZ_DB_SSL_CA_FILE:-/etc/ssl/certs/ca-certificates.crt}
       - BZ_ALLOW_UNSAFE_UTF8_CONVERSION=${BZ_ALLOW_UNSAFE_UTF8_CONVERSION:-0}
       - MARIADB_ROOT_HOST=%
       - MARIADB_ROOT_PASSWORD=bugzilla
