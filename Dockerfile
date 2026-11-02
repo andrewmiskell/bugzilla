@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -18,6 +18,7 @@ RUN apt-get -y install \
     libdate-calc-perl \
     libdatetime-perl \
     libdatetime-timezone-perl \
+    libdbd-mariadb-perl \
     libdbi-perl \
     libdbix-connector-perl \
     libemail-address-perl \
@@ -56,9 +57,9 @@ RUN apt-get -y install \
     tzdata \
     vim-common
 
-# Ubuntu 24 doesn't ship new enough versions of a few modules or doesn't ship them at all, so get them from CPAN
+# PatchReader is not packaged by Ubuntu, so install it from CPAN.
 RUN apt-get -y install build-essential && \
-    cpan install Template::Toolkit DBD::MariaDB PatchReader && \
+    cpan install PatchReader && \
     rm -rf /root/.cpan && \
     apt-get purge -y --autoremove build-essential
 
